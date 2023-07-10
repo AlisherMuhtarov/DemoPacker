@@ -1,14 +1,14 @@
 packer {
-  required_version = "<=1.9.1"
+  required_version = "<=1.9.1" # Specifies the required version of Packer.
   required_plugins {
-    amazon = {
+    amazon = { # Specifies the required Amazon plugin.
       version = ">= 1.2.5"
       source = "github.com/hashicorp/amazon"
     }
   }
 }
 
-data "amazon-ami" "amazonlinux" {
+data "amazon-ami" "amazonlinux" { # Data source for retrieving information about an Amazon Machine Image 
   filters = {
       virtualization-type = "hvm"
       name = "base-image"
@@ -20,7 +20,7 @@ data "amazon-ami" "amazonlinux" {
   region = "us-east-1"
 }
 
-source "amazon-ebs" "launching" {
+source "amazon-ebs" "launching" { # Specifies the details of the EBS volume to be used for building the AMI
 
   ami_name             = "MY-DEMO-AMI-{{timestamp}}"
   instance_type        = "t2.micro"
@@ -34,15 +34,15 @@ source "amazon-ebs" "launching" {
 }
 
 
-build {
+build { # Defines the build process and includes the sources and provisioners.
   sources = ["source.amazon-ebs.launching"]
 
-  provisioner "file" {
+  provisioner "file" { # Used to copy a file from the local machine to the remote instance being built.
     source = "Terraform.sh"
     destination = "/home/ec2-user/Terraform.sh"
   }
 
-  provisioner "shell" {
+  provisioner "shell" { # Used to execute shell commands on the remote instance.
 
     inline = [
       "sudo yum install git -y",
