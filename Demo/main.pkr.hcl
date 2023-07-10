@@ -8,6 +8,12 @@ packer {
   }
 }
 
+include {
+  files = [
+    "variables.pkr.hcl"
+  ]
+}
+
 data "amazon-ami" "amazonlinux" { # Data source for retrieving information about an Amazon Machine Image 
   filters = {
       virtualization-type = "hvm"
@@ -23,11 +29,11 @@ data "amazon-ami" "amazonlinux" { # Data source for retrieving information about
 source "amazon-ebs" "launching" { # Specifies the details of the EBS volume to be used for building the AMI
 
   ami_name             = "MY-DEMO-AMI-{{timestamp}}"
-  instance_type        = "t2.micro"
-  region               = "us-east-1"
+  instance_type        = var.instance_type
+  region               = var.region
   source_ami           = data.amazon-ami.amazonlinux.id
-  ssh_username         = "ec2-user"
-  communicator         = "ssh"
+  ssh_username         = var.ssh_user
+  communicator         = var.communicator
 
   force_deregister = false
 
