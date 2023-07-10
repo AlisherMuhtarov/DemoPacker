@@ -8,12 +8,6 @@ packer {
   }
 }
 
-include {
-  files = [
-    "variables.pkr.hcl"
-  ]
-}
-
 data "amazon-ami" "amazonlinux" { # Data source for retrieving information about an Amazon Machine Image 
   filters = {
       virtualization-type = "hvm"
