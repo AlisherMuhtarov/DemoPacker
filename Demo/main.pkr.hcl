@@ -22,7 +22,7 @@ data "amazon-ami" "amazonlinux" {
 
 source "amazon-ebs" "launching" {
 
-  ami_name             = "ami_requirements{{timestamp}}"
+  ami_name             = "MY-DEMO-AMI-{{timestamp}}"
   instance_type        = "t2.micro"
   region               = "us-east-1"
   source_ami           = data.amazon-ami.amazonlinux.id
