@@ -6,6 +6,7 @@ pipeline {
             steps {
                 dir('Demo') {
                     sh 'echo test'
+                    sh 'echo hey'
                 }
             }
         }
