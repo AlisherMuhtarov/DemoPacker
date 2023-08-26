@@ -1,53 +1,54 @@
 packer {
-  required_version = "<=1.9.1" # Specifies the required version of Packer.
+  required_version = "<=1.9.2"
   required_plugins {
-    amazon = { # Specifies the required Amazon plugin.
+    amazon = {
       version = ">= 1.2.5"
       source = "github.com/hashicorp/amazon"
     }
   }
 }
 
-data "amazon-ami" "amazonlinux" { # Data source for retrieving information about an Amazon Machine Image 
+
+data "amazon-ami" "amazonlinux" {
   filters = {
       virtualization-type = "hvm"
       name = "base-image"
       root-device-type = "ebs"
   }
 
-  owners = ["555519622762"]
+  owners = ["PUT AWS ACCOUNT ID"] 
   most_recent = true
   region = "us-east-1"
 }
 
-source "amazon-ebs" "launching" { # Specifies the details of the EBS volume to be used for building the AMI
+variable "commit_id" {
+  type = string
+  default = ""
+}
 
-  ami_name             = "MY-DEMO-AMI-{{timestamp}}"
-  instance_type        = var.instance_type
-  region               = var.region
+source "amazon-ebs" "launching" {
+
+  ami_name             = "demo_ami.${var.commit_id}"
+  instance_type        = "t2.micro"
+  region               = "us-east-1"
   source_ami           = data.amazon-ami.amazonlinux.id
-  ssh_username         = var.ssh_user
-  communicator         = var.communicator
+  ssh_username         = "ec2-user"
+  communicator         = "ssh"
 
   force_deregister = false
 
 }
 
 
-build { # Defines the build process and includes the sources and provisioners.
+build {
   sources = ["source.amazon-ebs.launching"]
+    
+    // provisioner "file" {
+    // source = "apache.sh"
+    // destination = "/home/ec2-user/"
+    // }
 
-  provisioner "file" { # Used to copy a file from the local machine to the remote instance being built.
-    source = "Terraform.sh"
-    destination = "/home/ec2-user/Terraform.sh"
-  }
-
-  provisioner "shell" { # Used to execute shell commands on the remote instance.
-
-    inline = [
-      "sudo yum install git -y",
-      "sudo chmod +x /home/ec2-user/Terraform.sh",
-      "sudo bash /home/ec2-user/Terraform.sh"
-    ]
-  }
+    provisioner "shell" {
+      script = "apache.sh"
+    }
 }
